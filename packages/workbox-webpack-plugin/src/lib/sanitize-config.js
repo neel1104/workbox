@@ -35,6 +35,7 @@ function forGetManifest(originalConfig) {
     'swDest',
     'swSrc',
     'test',
+    'buildId',
   ];
 
   return sanitizeConfig(originalConfig, propertiesToRemove);
@@ -59,6 +60,7 @@ function forGenerateSWString(originalConfig) {
     'precacheManifestFilename',
     'swDest',
     'test',
+    'buildId',
   ];
 
   return sanitizeConfig(originalConfig, propertiesToRemove);

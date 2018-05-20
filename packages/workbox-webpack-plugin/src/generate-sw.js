@@ -28,6 +28,7 @@ const relativeToOutputPath = require('./lib/relative-to-output-path');
 const sanitizeConfig = require('./lib/sanitize-config');
 const stringifyManifest = require('./lib/stringify-manifest');
 const warnAboutConfig = require('./lib/warn-about-config');
+const nextJSTransformation = require('./lib/next-js-transformation');
 
 /**
  * This class supports creating a new, ready-to-use service worker file as
@@ -67,8 +68,11 @@ class GenerateSW {
 
     const workboxSWImports = await getWorkboxSWImports(
       compilation, this.config);
-    const entries = getManifestEntriesFromCompilation(compilation, this.config);
+    let entries = getManifestEntriesFromCompilation(compilation, this.config);
     const importScriptsArray = [].concat(this.config.importScripts);
+
+    // apply transformation to make it work with next js
+    entries = nextJSTransformation(this.config, entries);
 
     const manifestString = stringifyManifest(entries);
     const manifestAsset = convertStringToAsset(manifestString);

@@ -30,6 +30,7 @@ const relativeToOutputPath = require('./lib/relative-to-output-path');
 const sanitizeConfig = require('./lib/sanitize-config');
 const stringifyManifest = require('./lib/stringify-manifest');
 const warnAboutConfig = require('./lib/warn-about-config');
+const nextJSTransformation = require('./lib/next-js-transformation');
 
 /**
  * This class supports taking an existing service worker file which already
@@ -53,6 +54,9 @@ class InjectManifest {
   constructor(config = {}) {
     assert(typeof config.swSrc === 'string', `swSrc must be set to the path ` +
       `to an existing service worker file.`);
+
+    assert(typeof config.buildId === 'string', `buildId from next js must be ` +
+      `provided to build precache manifest.`);
 
     this.config = Object.assign(getDefaultConfig(), {
       // Default to using the same filename as the swSrc file, since that's
@@ -99,6 +103,9 @@ class InjectManifest {
       compilation.warnings = compilation.warnings.concat(warnings || []);
       entries = entries.concat(manifestEntries);
     }
+
+    // apply transformation to make it work with next js
+    entries = nextJSTransformation(this.config, entries);
 
     const manifestString = stringifyManifest(entries);
     const manifestAsset = convertStringToAsset(manifestString);
